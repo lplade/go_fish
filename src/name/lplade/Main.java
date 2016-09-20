@@ -8,8 +8,8 @@ import java.util.Scanner;
 public class Main {
 
     //Create two scanners, one for Strings, and one for numbers - int and float values.
-    static Scanner stringScanner = new Scanner(System.in);
-    static Scanner numberScanner = new Scanner(System.in);
+    private static Scanner stringScanner = new Scanner(System.in);
+    private static Scanner numberScanner = new Scanner(System.in);
 
 
     public static void main(String[] args) {
@@ -25,8 +25,8 @@ public class Main {
         int[] playerBooks = new int[14];
         */
 
-        ArrayList playerHand = new ArrayList();
-        ArrayList cpuHand = new ArrayList();
+        ArrayList<Object> playerHand = new ArrayList<>();
+        ArrayList<Object> cpuHand = new ArrayList<>();
         int[] playerBook = new int[14];
         int[] cpuBook = new int[14];
 
@@ -170,7 +170,7 @@ public class Main {
 
     }
 
-    public static int getCardValInt(Object[] card) {
+    private static int getCardValInt(Object[] card) {
         //returns the value of the "card" Object as index integer
         Integer value = (Integer) card[0];
         return value;
