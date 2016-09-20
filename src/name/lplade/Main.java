@@ -1,40 +1,48 @@
-package com.lade;
+package name.lplade;
 
-import java.lang.reflect.Array;
-import java.util.Random;
+import sun.awt.image.ImageWatched;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Main {
 
     //Create two scanners, one for Strings, and one for numbers - int and float values.
-
-    //Use this scanner to read text data that will be stored in String variables
     static Scanner stringScanner = new Scanner(System.in);
-    //Use this scanner to read in numerical data that will be stored in int or double variables
     static Scanner numberScanner = new Scanner(System.in);
 
-    //set up randomizer
-    Random rand = new Random();
-
-    public int[] deck = shuffleDeck(); //public scope, one instance shared by all methods
 
     public static void main(String[] args) {
 
-        //simple arrays to keep track of how many of each card in hand. Facevalue -1
+        //Generate a new deck of cards
+        LinkedList deck = newDeck(false);
+        //Shuffle the deck
+        deck = shuffleDeck(deck);
 
-        int[] playerHand = new int[13];
-        int[] playerBooks = new int[13];
-        int[] cpuHand = new int[13];
-        int[] cpuBooks = new int[13];
+        /*
+        //simple arrays to keep track of how many of each card in hand. Facevalue
+        int[] playerHand = new int[14];
+        int[] playerBooks = new int[14];
+        int[] cpuHand = new int[14];
+        int[] cpuBooks = new int[14];
         //TODO make a data structure which better represents a hand of cards.
+        */
+
+        ArrayList playerHand = new ArrayList;
+        ArrayList cpuHand = new ArrayList;
+        int[] playerBook = new int[14];
+        int[] cpuBook = new int[14];
 
         //Deal out seven cards to each player
         System.out.println("Dealing cards...");
         for (i = 0; i < 7; i++) {
-            int newCard = dealACard();
-            playerHand[newCard]++;
-            newCard = dealACard();
-            cpuHand[newCard]++;
+            Object newCard;
+            newCard = deck.pop();
+            playerHand.add(newCard);
+            newCard = deck.pop();
+            cpuHand.add(newCard);
         }
 
 
@@ -42,7 +50,7 @@ public class Main {
         int cpuAsk = 0; //for rudimentary AI
 
         //Main game loop
-        while (!endGame) {
+        do {
             //Run a turn
 
             System.out.println("Your cards: A 2 3 4 5 6 7 8 9 J Q K");
@@ -91,7 +99,8 @@ public class Main {
                     endGame = false; //keep playing until all books are made
                 }
             }
-        }
+        } while (!endGame);
+
         int playerScore, cpuScore = 0;
         for (i = 0; i < 13; i++) {
             if (playerBooks[i] == 4) playerScore++;
@@ -99,53 +108,96 @@ public class Main {
         }
         System.out.println();
 
+
         // Close scanners. Good practice to clean up resources you use.
         // Don't try to use scanners after this point. All code that uses scanners goes above here.
         stringScanner.close();
         numberScanner.close();
     }
 
-    private static int[] shuffleDeck() {
-        int[] worldCards = new int[13]; //TODO kludge to keep lame RNG from making more than 4 cards.
-        for (int i = 0; i < 13; i++) {
-            worldCards[i] = 4; //counter of how many of each card left in deck
-        }import com.sun.org.apache.xpath.internal.operations.Bool;
-        return worldCards;
-    }
+    private static LinkedList newDeck(Boolean jokers) {
+        // Use this to generate an array containing all 52/54 cards
 
-    private static int dealACard() {
-        //TODO should actually handle logic of drawing random cards one by one
-        //For now, we will just generate a random number between 0 and 12.
+        String[] suits = {"clubs", "diamonds", "hearts", "spades"};
+        //int[] cardValues = new int[14];
+        //for (int i = 0; i < cardValues.length; i++){
+        //    cardValues[i] = i;
+        //}
+        // cardValue as a simple index for card value
+        // 0 = joker
+        // 1 = ace
+        // 2 = two
+        // ...
+        // 10 = ten
+        // 11 = jack
+        // 12 = queen
+        // 13 = king
 
-        //0 = ace
-        //1 = 2
-        //9 = 10
-        //10 = jack
-        //11 = queen
-        //12 = king
+        //populate the initial card deck
+        //each card is 2-element array of {value, suit}
 
-
-        Boolean legitCard = false;
-        while (!legitCard) {
-            int cardVal = rand.nextInt(13);
-            if (deck[cardVal] > 0) {
-                deck[cardVal]--;
-                legitCard = true;
+        LinkedList cardDeck = new LinkedList<>();
+        for (String suit : suits) {
+            for (int cardValue = 1; cardValue < 14; cardValue++) {
+                Object[] card = {cardValue, suit};
+                cardDeck.add(card);
             }
-            //otherwise, keep randomizing
+        }
+        if (jokers) { //add two jokers
+            Object[] card = {0, "WILD"};
+            for (int i = 0; i < 2; i++)
+                cardDeck.add(card);
         }
 
-        return cardVal;
+        return cardDeck;
     }
 
-    private static Object[] showCards(int[] cardInts){
-        //apparently, we can't pass an array of ints into string formatter
-        //here, we convert them into something the string formatter accepts
-        //http://stackoverflow.com/questions/5606338/cast-primitive-type-array-into-object-array-in-java
-        Object[] cardObjs = new Object[Array.getLength(cardInts)];
-        for (int i = 0; i < Array.getLength(cardInts); ++i){
-            cardObjs[i] = Array.get(cardInts, i);
+    private static LinkedList shuffleDeck(LinkedList cardDeck) {
+
+        //use Collections method to randomize order
+
+        Collections.shuffle(cardDeck);
+        return cardDeck;
+
+    }
+
+    private static void displayCard(Object[] card) {
+        //print a card in human readable format on console
+        Integer value = (Integer) card[0];
+        String suit = (String) card[1];
+
+        //TODO logic that actually decodes above described index into face cards and such
+        //for now, just show that index value
+
+        System.out.printf("%d of %s\n", value, suit);
+
+    }
+
+    public static int getCardValInt(Object[] card) {
+        //returns the value of the "card" Object as index integer
+        Integer value = (Integer) card[0];
+        return value;
+    }
+
+    private static String cardIntToStr(int cardVal) {
+        //this decodes a card index value into a string describing the card
+        //TODO some logic
+        return null;
+    }
+
+    private static String getCardSuit(Object[] card) {
+        //returns the suit of a "card" Object
+        String suit = (String) card[1];
+        return suit;
+    }
+
+    private static int[] handToTable(ArrayList<Object> hand){
+        //returns a hand ArrayList as an int array of how many card values
+        int[] cardTotals = new int[14];
+        for(Object card : hand) {
+            int thisCardValue = getCardValInt((Object[]) card);
+
         }
-        return cardObjs;
     }
 }
+
