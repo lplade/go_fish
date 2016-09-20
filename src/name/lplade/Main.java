@@ -1,7 +1,5 @@
 package name.lplade;
 
-import sun.awt.image.ImageWatched;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -25,19 +23,16 @@ public class Main {
         //simple arrays to keep track of how many of each card in hand. Facevalue
         int[] playerHand = new int[14];
         int[] playerBooks = new int[14];
-        int[] cpuHand = new int[14];
-        int[] cpuBooks = new int[14];
-        //TODO make a data structure which better represents a hand of cards.
         */
 
-        ArrayList playerHand = new ArrayList;
-        ArrayList cpuHand = new ArrayList;
+        ArrayList playerHand = new ArrayList();
+        ArrayList cpuHand = new ArrayList();
         int[] playerBook = new int[14];
         int[] cpuBook = new int[14];
 
         //Deal out seven cards to each player
         System.out.println("Dealing cards...");
-        for (i = 0; i < 7; i++) {
+        for (int i = 0; i < 7; i++) {
             Object newCard;
             newCard = deck.pop();
             playerHand.add(newCard);
@@ -45,6 +40,7 @@ public class Main {
             cpuHand.add(newCard);
         }
 
+        //TODO convert remaining LinkedList into unsorted pool of cards now?
 
         Boolean endGame = false; //sentinel
         int cpuAsk = 0; //for rudimentary AI
@@ -54,14 +50,14 @@ public class Main {
             //Run a turn
 
             System.out.println("Your cards: A 2 3 4 5 6 7 8 9 J Q K");
-            System.out.printf("            %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d", showCards(playerHand));
-            System.out.printf("     BOOKS: %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d", showCards(playerBooks));
+            System.out.printf("            %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d\n", showCards(handToTable(playerHand)));
+            System.out.printf("     BOOKS: %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d\n", showCards(playerBook));
             System.out.println();
 
             //For debugging, obviously
             System.out.println("  My cards: A 2 3 4 5 6 7 8 9 J Q K");
-            System.out.printf("            %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d", showCards(cpuHand));
-            System.out.printf("     BOOKS: %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d", showCards(cpuBooks));
+            System.out.printf("            %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d\n", showCards(handToTable(cpuHand)));
+            System.out.printf("     BOOKS: %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d %1d\n", showCards(cpuBook));
             System.out.println();
 
             Boolean legalPick = false;
@@ -75,7 +71,7 @@ public class Main {
 
             //todo loop through cpu cards to see if match exists,
             //if so remove all from cpu hand and add it to my hand
-            //otherwise, Fish a new card with dealACard()
+            //otherwise, Fish a new card ()
             //if fished card is seekCard, then player gets another turn
             //TODO wrap player turn in its own while loop for bonus turns
             //check player hand to see if player has four of any card
@@ -86,7 +82,7 @@ public class Main {
             //Print a message about card asking
             //Automatically seek through player hand
             //if match, remove all from player hand and add to cpu hand
-            //otherwise, fish a new card with dealACard()
+            //otherwise, fish a new card ()
             //if fished card is seekCard, then cpu gets another turn
             //TODO wrap cpu turn in its own while loop for bonus turns
             //check cpu hand to see if cpu has four of any card
@@ -94,17 +90,18 @@ public class Main {
 
 
             endGame = true;
-            for (i = 0; i < 13; i++) {
-                if (!(playerBooks[i] == 4 || cpuBooks[i] == 4)) {
+            for (int i = 1; i < 14; i++) {
+                if (!(playerBook[i] == 4 || cpuBook[i] == 4)) {
                     endGame = false; //keep playing until all books are made
                 }
             }
         } while (!endGame);
 
-        int playerScore, cpuScore = 0;
-        for (i = 0; i < 13; i++) {
-            if (playerBooks[i] == 4) playerScore++;
-            if (cpuBooks[i] == 4) cpuScore++;
+        int playerScore =0;
+        int cpuScore = 0;
+        for (int i = 1; i < 14; i++) {
+            if (playerBook[i] == 4) playerScore++;
+            if (cpuBook[i] == 4) cpuScore++;
         }
         System.out.println();
 
@@ -196,8 +193,22 @@ public class Main {
         int[] cardTotals = new int[14];
         for(Object card : hand) {
             int thisCardValue = getCardValInt((Object[]) card);
-
+            //increment that "slot" in the array. ignore suit.
+            cardTotals[thisCardValue]++;
         }
+        return cardTotals;
     }
+
+    private static Object[] showCards(int[] cardInts){
+        //apparently, we can't pass an array of ints into string formatter
+        //here, we convert them into something the string formatter accepts
+        //http://stackoverflow.com/questions/5606338/cast-primitive-type-array-into-object-array-in-java
+        Object[] cardObjs = new Object[cardInts.length];
+        for (int i = 0; i < cardInts.length; i++){
+            cardObjs[i] = cardInts[i];
+        }
+        return cardObjs;
+    }
+
 }
 
